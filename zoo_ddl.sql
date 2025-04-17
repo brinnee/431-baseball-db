@@ -25,18 +25,23 @@ CREATE TABLE Employee (
 
 CREATE TABLE Animals (
     animalID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    care_takerID INT UNSIGNED NOT NULL,
     exhibit VARCHAR(150) NOT NULL,
     age TINYINT UNSIGNED DEFAULT 1,
     weight INT UNSIGNED,
-    feeding_time TIME,
+    feeding_time DATETIME,
     food_type VARCHAR(250),
-    CONSTRAINT fk_caretakerID FOREIGN KEY (employeeID) REFERENCES Employee(employeeID) ON DELETE CASCADE
+    CONSTRAINT fk_caretakerID FOREIGN KEY (care_takerID) REFERENCES Employee(employeeID) ON DELETE CASCADE
 );
 
 CREATE TABLE Roles (
     ID INT AUTO_INCREMENT primary key,
     role_name VARCHAR(50) UNIQUE NOT NULL
 );
+
+INSERT INTO Roles (ID, role_name) VALUES
+(1, manager),
+(2, employee);
 
 
 --manager has full access(read/write)
