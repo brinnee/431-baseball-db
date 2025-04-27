@@ -22,6 +22,12 @@ CREATE TABLE Employee (
     PRIMARY KEY (employeeID),
     CONSTRAINT valid_zipcode CHECK (ZipCode REGEXP '^(?!0{5})(?!9{5})\\d{5}(-(?!0{4})(?!9{4})\\d{4})?$') 
 );
+CREATE TABLE accounts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role_name VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE Animals (
     animalID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -43,6 +49,11 @@ INSERT INTO Roles (ID, role_name) VALUES
 (1, manager),
 (2, employee);
 
+INSERT INTO accounts (username, password, role_name) VALUES
+('owner1', 'pass123', 'owner'),
+('manager1', 'pass123', 'manager'),
+('employee1', 'pass123', 'employee'),
+('customer1', 'pass123', 'customer');
 
 --manager has full access(read/write)
 CREATE USER 'manager'@'localhost' IDENTIFIED BY 'secureManagerPassword';
