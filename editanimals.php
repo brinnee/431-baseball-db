@@ -87,7 +87,7 @@
 
               <tr>
                 <td style="text-align: right; background: lightblue;">Feeding Time</td>
-                <td><input type="text" name="feeding_time" value="" size="15" maxlength="250"/></td>
+                <td><input type="text" name="feeding_time" value="" size="15" maxlength="5"/></td>
               </tr>
 
               <tr>
@@ -104,12 +104,12 @@
 
         <td style="vertical-align:top; border:1px solid black;">
           <!-- FORM to enter game statistics for a particular player -->
-          <form action="processAnimaldata.php" method="post">
+          <form action="processAnimalUpdate.php" method="post">
             <table style="margin: 0px auto; border: 0px; border-collapse:separate;">
               <tr>
                 <td style="text-align: right; background: lightblue;">Name/ID</td>
 <!--            <td><input type="text" name="name" value="" size="50" maxlength="500"/></td>  -->
-                <td><select name="name_ID" required>
+                <td><select name="animalID" required>
                   <option value="" selected disabled hidden>Choose animal here</option>
                   <?php
                     // for each row of data returned,
@@ -123,8 +123,8 @@
                     $stmt->data_seek(0);
                     while( $stmt->fetch() )
                     {
-                      $animal = new Animal($name, $care_takerID);
-                      echo "<option value=\"$Name_ID\">".$animal->name().', ID: '.$animalID."</option>\n";
+                      $animal = new Animal($name);
+                      echo "<option value=\"$animalID\">".$animal->name().', ID: '.$animalID."</option>\n";
                     }
 //////// END-TO-DO:  End Student Region ///////////
                   ?>
@@ -132,23 +132,28 @@
               </tr>
 
               <tr>
+                <td style="text-align: right; background: lightblue;">Exhibit</td>
+               <td><input type="text" name="exhibit" value="" size="10" maxlength="250"/></td>
+              </tr>
+
+              <tr>
                 <td style="text-align: right; background: lightblue;">Age</td>
-               <td><input type="text" name="points" value="" size="10" maxlength="3"/></td>
+               <td><input type="text" name="age" value="" size="10" maxlength="5"/></td>
               </tr>
 
               <tr>
                 <td style="text-align: right; background: lightblue;">Weight</td>
-               <td><input type="text" name="points" value="" size="20" maxlength="3"/></td>
+               <td><input type="text" name="weight" value="" size="20" maxlength="10"/></td>
               </tr>
               <tr>
 
                 <td style="text-align: right; background: lightblue;">Feeding Time (Hour:Min)</td>
-               <td><input type="text" name="time" value="" size="15" maxlength="5"/></td>
+               <td><input type="text" name="feeding_time" value="" size="15" maxlength="5"/></td>
               </tr>
 
               <tr>
                 <td style="text-align: right; background: lightblue;">Food Type</td>
-                <td><input type="text" name="assists" value="" size="10" maxlength="2"/></td>
+                <td><input type="text" name="food" value="" size="10" maxlength="250"/></td>
               </tr>
 
               <tr>
@@ -165,11 +170,8 @@
 
     <?php
       // emit the number of rows (records) in the table
-//////// TO-DO:  Begin Student Region ///////////
-      // echo "Number of Records:  ".$stmt->num_rows."<br/>";
       echo "Number of Records:  ".$stmt->num_rows."<br/>";
 
-//////// END-TO-DO:  End Student Region ///////////
     ?>
 
     <table style="border:1px solid black; border-collapse:collapse;">
@@ -185,23 +187,14 @@
         <th style="vertical-align:top; border:1px solid black; background: lightgreen;">Caretaker Name</th>
       </tr>
       <?php
-//////// TO-DO:  Begin Student Region ///////////
         $fmt_style = 'style="vertical-align:top; border:1px solid black;"';
         $stmt->data_seek(0);
         $row_number = 0;
-//////// END-TO-DO:  End Student Region ///////////
-
-//////// TO-DO:  Begin Student Region ///////////
         while( $stmt->fetch() )
         {
-//////// END-TO-DO:  End Student Region ///////////
-          // construct Address and PlayerStatistic objects supplying as constructor parameters the retrieved database columns
-//////// TO-DO:  Begin Student Region ///////////
           $animal = new Animal($name, $care_takerID, $exhibit, $age, $weight, $feeding_time, $food_type);
 
-//////// END-TO-DO:  End Student Region ///////////
-          // Emit table row data using appropriate getters from the Address and PlayerStatistic objects
-//////// TO-DO:  Begin Student Region ///////////
+          // Emit table row data 
           echo "      <tr>";
           echo "      <td  $fmt_style>".$animalID;
           echo "      <td  $fmt_style>".$animal->name();
@@ -225,7 +218,6 @@
             echo "        <td  style=\"border:1px solid black; border-collapse:collapse; background:rgb(158, 158, 158);\">\n";
             echo "        <td  $fmt_style>".$e_Lname.', '.$e_Fname;
         }
-//////// END-TO-DO:  End Student Region ///////////
       ?>
     </table>
 
