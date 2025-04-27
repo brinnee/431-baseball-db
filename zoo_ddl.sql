@@ -22,6 +22,9 @@ CREATE TABLE Employee (
     PRIMARY KEY (employeeID),
     CONSTRAINT valid_zipcode CHECK (ZipCode REGEXP '^(?!0{5})(?!9{5})\\d{5}(-(?!0{4})(?!9{4})\\d{4})?$') 
 );
+
+INSERT INTO Employee VALUES (2,'Rigby','Test','nowhere','here','there','somehwere',84651);
+
 CREATE TABLE accounts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -31,6 +34,7 @@ CREATE TABLE accounts (
 
 CREATE TABLE Animals (
     animalID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
     care_takerID INT UNSIGNED NOT NULL,
     exhibit VARCHAR(150) NOT NULL,
     age TINYINT UNSIGNED DEFAULT 1,
