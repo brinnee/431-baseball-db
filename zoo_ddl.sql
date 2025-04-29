@@ -8,7 +8,7 @@ GRANT
     UPDATE,
     EXECUTE ON zoo_db.* TO 'csuf_username'@'localhost';
 
-USE zoo__db;
+USE zoo_db;
 
 CREATE TABLE Employee (
     employeeID INT UNSIGNED AUTO_INCREMENT,
@@ -25,12 +25,6 @@ CREATE TABLE Employee (
 
 INSERT INTO Employee VALUES (2,'Rigby','Test','nowhere','here','there','somehwere',84651);
 
-CREATE TABLE accounts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role_name VARCHAR(50) NOT NULL
-);
 
 CREATE TABLE Animals (
     animalID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -50,8 +44,9 @@ CREATE TABLE Roles (
 );
 
 INSERT INTO Roles (ID, role_name) VALUES
-(1, manager),
-(2, employee);
+(1, Manager),
+(2, Visitor),
+(3, Employee);
 
 INSERT INTO accounts (username, password, role_name) VALUES
 ('owner1', 'pass123', 'owner'),
