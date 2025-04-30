@@ -23,7 +23,7 @@
         $stmt->store_result();
         $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appeareances, $runs_scored, $hits, $home_runs, $team, $team_city);
     }
-    $positions = ['BENCHED','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH',];
+    $positions = ['BENCHED','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH','COACH'];
 ?>
 
 
@@ -78,7 +78,7 @@
                 echo "<td>$name";
                 renderCell($age);
                 renderCell($dob);
-
+                // dropdown menu for position select
                 echo "<td>";
                 echo "<select name='position[$playerID]'>";
                 foreach ($positions as $position_option) {
@@ -86,9 +86,16 @@
                     echo "<option value='$position_option' $selected>$position_option</option>";
                 }
                 echo "</select>";
+                // combine multiple vars to create address
                 echo "</td>";
-
-                echo "<td>address";
+                if (empty($street) && empty($city) && empty($state) && empty($zip) && empty($country)){
+                  echo '<td style="background:rgb(135, 135, 135);"></td>';
+                }
+                else {
+                  echo "<td>".$street."<br/>"
+                  .$city.', '.$state.' '.$zip.'<br/>'
+                  .$country."</td>\n";
+                }
                 echo "<td>$games_played";
                 renderCell($plate_appeareances);
                 renderCell($runs_scored);
@@ -101,12 +108,47 @@
            ?>
         </table>
         
-        <div style="text-align:right; margin-right:100px; margin-top:25px;">
-            <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;"> Update </button>
+        <div style="text-align:left; margin-left:100px; margin-top:25px;">
+            <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;"> Update Positions </button>
 
-            <button type="submit" name="cancel" value="1" style="padding: 12px 24px; font-size: 16px; background-color: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;"> Cancel </button>
+            <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;"> Cancel </button>
         </div>
     </form>
+    <!-- Statistics Update Form -->
+    <details style="text-align:left;margin-left:90px">
+              <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; margin: 10px 0 0 10px;width: 170px;"> Update Player Stats</summary>
+              <form action="updatestats.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
+                  <label for ="playerID">Player:</label>
+                  <select name="playerID" required style= "height: 22px; font-size: 14px;">
+                    <option value="" selected disabled hidden>Choose Player Here</option>
+                    <?php
+                      $stmt->data_seek(0);
+                      while( $stmt->fetch() )
+                      {
+                        echo "<option value=\"$playerID\">".$name.', ID: '.$playerID."</option>\n";
+                      }
+                    ?>
+                  </select><br><br>
+
+                  <label for="games_played">Games Played:</label>
+                  <input type="number" name="games_played" id="games_played" ><br><br>
+
+                  <label for="runs_scored">Plate Appeareances:</label>
+                  <input type="number" name="plate_appeareances" id="plate_appeareances"><br><br>
+
+                  <label for="runs_scored">Runs Scored:</label>
+                  <input type="number" name="runs_scored" id="runs_scored"><br><br>
+
+                  <label for="hits">Hits:</label>
+                  <input type="number" name="hits" id="hits"><br><br>
+
+                  <label for="home_runs">Home Runs:</label>
+                  <input type="number" name="home_runs" id="home_runs"><br><br>
+
+                  <button type="submit">Submit Stats</button>
+              </form>
+            </details>
+
     <h2>Upcoming Matches: </h2>
     <div>
     <table>
