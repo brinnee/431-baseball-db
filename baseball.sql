@@ -10,7 +10,8 @@ USE baseball_db;
 
 CREATE TABLE TEAM (
     ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    team_name VARCHAR(150) NOT NULL
+    team_name VARCHAR(150) NOT NULL,
+    city VARCHAR(100) NOT NULL
 );
 
 
@@ -19,14 +20,14 @@ CREATE TABLE Players (
     name VARCHAR(150) NOT NULL,
     age TINYINT UNSIGNED DEFAULT 1,
     position VARCHAR(150) NOT NULL,
-    dob DATETIME, --date of birth
+    dob DATE,
     team_id INT UNSIGNED NOT NULL,
     Street VARCHAR(250),
     City VARCHAR(100),
     State VARCHAR(100),
     Country VARCHAR(100),
     ZipCode VARCHAR(10),
-    CONSTRAINT valid_zipcode CHECK (ZipCode REGEXP '^(?!0{5})(?!9{5})\\d{5}(-(?!0{4})(?!9{4})\\d{4})?$'),
+    CONSTRAINT valid_zipcode CHECK (ZipCode REGEXP '^(?!0{5})(?!9{5})\\d{5}(-(?!0{4}|9{4})\\d{4})?$'),
     CONSTRAINT fk_team_id FOREIGN KEY (team_id) REFERENCES TEAM(ID) ON DELETE CASCADE
 );
 
@@ -50,6 +51,7 @@ CREATE TABLE Matches (
     home_score TINYINT UNSIGNED DEFAULT 0,
     away_score TINYINT UNSIGNED DEFAULT 0,
     match_date DATE,
+    match_status VARCHAR(100),
     CONSTRAINT fk_home FOREIGN KEY (home_team) REFERENCES TEAM(ID),
     CONSTRAINT fk_away FOREIGN KEY (away_team) REFERENCES TEAM(ID)
 );
@@ -65,8 +67,19 @@ CREATE TABLE Users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
-    FOREIGN KEY (role_id) REFERENCES Roles(ID) ON DELETE CASCADE
+    member_id INT UNSIGNED NOT NULL,
+    FOREIGN KEY (role_id) REFERENCES Roles(ID) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES Players(playerID) ON DELETE CASCADE
 );
+
+-- insert teams
+INSERT INTO TEAM VALUES
+    (0, "None", "")
+    (1, "Dodgers", "Los Angeles"),
+    (2, "Yankees", "New York"),
+    (3, "Cubs", "Chicago"),
+    (4, "Red Sox", "Boston"),
+    (5, "Giants", "San Francisco");
 
 -- insert roles
 INSERT INTO Roles (ID, role_name) VALUES

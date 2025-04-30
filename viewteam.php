@@ -1,6 +1,7 @@
 <?php
     require_once('config.php');
-      require_once('AnimalData.php');
+    require_once('playerinfo.php');
+    require_once('playerstats.php');
 
     // Connect to database
     require_once( 'Adaptation.php' );
@@ -12,72 +13,36 @@
         echo "Error: " . $db->connect_error . "<br/>";
     }
     else {// Connection succeeded 
-        $query = "SELECT animalID, name, care_takerID,exhibit,age,weight,feeding_time,food_type,Fname, Lname FROM animals a LEFT JOIN employee e ON a.care_takerID=e.employeeID;";
+        $team_id = isset($_GET['team_id']) ? (int)$_GET['team_id'] : 0;
+
+        $query = "SELECT p.playerID, p.name, p.age, p.position, p.dob, p.Street, p.City, p.State, p.Country, p.ZipCode, s.Games_played,. s.Plate_appearance,. s.Runs_Scored,. s.Hits,. s.Home_runs, t.team_name, t.city FROM players p LEFT JOIN statistics s ON p.playerID = s.ID LEFT JOIN team t ON p.team_id = t.ID WHERE p.team_id=?;";
 
         $stmt = $db->prepare($query);
-        // no query parameters to bind
+        $stmt -> bind_param('i',$team_id);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result( $animalID,
-                            $name,
-                            $care_takerID,
-                            $exhibit,
-                            $age,
-                            $weight,
-                            $feeding_time,
-                            $food_type,
-                            $e_Fname,
-                            $e_Lname );
+        $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appeareances, $runs_scored, $hits, $home_runs, $team, $team_city);
     }
-    $teamname = "Jits";
-    $positions = ['BENCHED','meat','leafy greens','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH',];
+    $positions = ['BENCHED','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH',];
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
   <title>Team Viewer</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    h1 {
-      text-align: center;
-    }
-    h2 {
-        margin-left: 100px;
-    }
-    table {
-      width: 90%;
-      margin: 0 auto;
-      border-collapse: collapse;
-      background-color: #fff;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background-color: #2c3e50;
-      color: #fff;
-    }
-    tr:nth-child(even) {
-      background-color:rgb(209, 209, 209);
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <h1><?php echo $teamname?> Team Roster</h1>
+    <?php 
+    $stmt -> fetch();
+    echo "<h1>". $team_city.' '. $team.' '."Team Roster</h1>"
+    ?>
 
     
-    <h2>Upcoming Matches: </h2>
-    <form method="POST" action="updatepos.php">
+    <h2>Team Roster: </h2>
+    <form method="POST" action="updatepos.php?team_id=<?php echo $team_id;?>">
         <table>
          <tr>
             <th>ID</th>
@@ -85,47 +50,51 @@
             <th>Age</th>
             <th>Date of Birth</th>
             <th>Position</th>
+            <th>Address</th>
             <th>Games Played</th>
             <th>Plate Appeareances</th>
             <th>Runs Scored</th>
             <th>Hits</th>
             <th>Home Runs</th>
+            <th>Team</th>
          </tr>
           <?php
-            $fmt_style = 'style="vertical-align:top; border:1px solid black;"';
+            function renderCell($value) {
+              // $style = 'style="border:1px solid black; border-collapse:collapse;"';
+          
+              if (is_null($value)) {
+                  echo '<td style="background:rgb(135, 135, 135);"></td>';
+              } else {
+                  echo '<td>' . htmlspecialchars($value) . '</td>';
+              }
+            }
+            // $fmt_style = 'style="vertical-align:top; border:1px solid black;"';
             $stmt->data_seek(0);
-            $row_number = 0;
             while( $stmt->fetch() )
             {
-                $animal = new Animal($name, $care_takerID, $exhibit, $age, $weight, $feeding_time, $food_type);
+                // Emit table row data, directly output not null values
+                echo "<tr>";
+                echo "<td>$playerID";
+                echo "<td>$name";
+                renderCell($age);
+                renderCell($dob);
 
-                // Emit table row data 
-                echo "      <tr>";
-                echo "      <td  $fmt_style>".$animalID;
-                echo "      <td  $fmt_style>".$animal->name();
-                echo "      <td  $fmt_style>".$animal->caretaker();
-                echo "      <td  $fmt_style>".$animal->exhibit();
-                // Dropdown for Position
-                echo "      <td  $fmt_style>";
-                echo "<select name='position'>";
-                foreach ($positions as $option) {
-                    $selected = ($option==$food_type) ? "selected" : '';
-                    echo "<option value='$option' $selected>$option</option>";
+                echo "<td>";
+                echo "<select name='position[$playerID]'>";
+                foreach ($positions as $position_option) {
+                    $selected = ($position == $position_option) ? "selected" : "";
+                    echo "<option value='$position_option' $selected>$position_option</option>";
                 }
                 echo "</select>";
+                echo "</td>";
 
-                if ($age > 0)
-                    echo "      <td  $fmt_style>".$animal->age();
-                else 
-                    echo "        <td  style=\"border:1px solid black; border-collapse:collapse; background:rgb(158, 158, 158);\">";
-                if ($weight > 0)
-                echo "      <td  $fmt_style>".$animal->weight();
-                else 
-                    echo "        <td  style=\"border:1px solid black; border-collapse:collapse; background:rgb(158, 158, 158);\">";
-                if ($feeding_time !== '00:00')
-                    echo "      <td  $fmt_style>".$animal->feeding_time();
-                else 
-                    echo "        <td  style=\"border:1px solid black; border-collapse:collapse; background:rgb(158, 158, 158);\">";
+                echo "<td>address";
+                echo "<td>$games_played";
+                renderCell($plate_appeareances);
+                renderCell($runs_scored);
+                renderCell($hits);
+                renderCell($home_runs);
+                echo "<td>$team";
                 
                 
             }

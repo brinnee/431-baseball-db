@@ -1,5 +1,5 @@
 <?php
-require_once 'PlayerStatistics.php';
+require_once 'playerstats.php';
 
 class Player {
     private $playerID;
