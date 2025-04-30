@@ -7,7 +7,7 @@ require_once 'config.php';
 $DB_HOST = "localhost"; 
 $DB_USER = "root"; 
 $DB_PASSWORD = ""; 
-$DB_NAME = "zoo_db"; 
+$DB_NAME = "baseball_db"; 
 
 $conn = new mysqli($DB_HOST, $DB_USER, $DB_PASSWORD, $DB_NAME);
 if ($conn->connect_error) {
@@ -49,9 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password = $_POST['password'];
         $role = $_POST['role'];
         
-        $employeeID = NULL; // assume NULL unless specified
 
-        // Step 1: Check if username already exists
+        //check if username already exists
         $checkUserQuery = "SELECT ID FROM Users WHERE username = ?";
         $stmtCheck = $conn->prepare($checkUserQuery);
         $stmtCheck->bind_param("s", $username);
@@ -63,27 +62,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
         $stmtCheck->close();
-
-        // Step 2: Get role ID
-        $getRoleQuery = "SELECT ID FROM Roles WHERE role_name = ?";
+        
+        //getting role id
+        $getRoleQuery = "SELECT ID FROM Roles WHERE LOWER(role_name) = LOWER(?)";
         $stmtRole = $conn->prepare($getRoleQuery);
         $stmtRole->bind_param("s", $role);
         $stmtRole->execute();
         $stmtRole->bind_result($role_id);
-        $stmtRole->fetch();
-        $stmtRole->close();
 
-        if (!$role_id) {
+        if (!$stmtRole->fetch()) {
+            echo "<pre>DEBUG: Role lookup failed. Value sent: '$role'</pre>";
             echo "<script>alert('Error: Selected role is invalid.'); window.location.href='homepage.php';</script>";
+            $stmtRole->close();
             exit();
         }
 
-        // Step 3: Insert new user
-        $insertQuery = "INSERT INTO Users (username, password, role_id, employee_id) VALUES (?, ?, ?, ?)";
+        $stmtRole->close();
+
+        //inserting new user
+        $insertQuery = "INSERT INTO Users (username, password, role_id) VALUES ( ?, ?, ?)";
         $stmt = $conn->prepare($insertQuery);
 
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt->bind_param("ssii", $username, $hashed_password, $role_id, $employeeID);
+        $stmt->bind_param("ssi", $username, $hashed_password, $role_id);
 
         if ($stmt->execute()) {
             echo "<script>alert('Registration successful! You can now log in.'); window.location.href='homepage.php';</script>";
@@ -123,11 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <input type="password" name="password" required><br/>
 
     <label>Role:</label>
-    <select name="role" required>
-        <option value="Employee">Employee</option>
-        <option value="Visitor">Visitor</option>
-        <option value="Manager">Manager</option>
-    </select><br/><br/>
+<select name="role" required>
+    <option value="manager">Manager</option>
+    <option value="coach">Coach</option>
+    <option value="player">Player</option>
+    <option value="visitor">Visitor</option>
+</select><br/><br/>
 
     <button type="submit" name="action" value="register">Register</button>
 </form>
