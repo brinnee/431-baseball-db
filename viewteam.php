@@ -15,15 +15,54 @@
     else {// Connection succeeded 
         $team_id = isset($_GET['team_id']) ? (int)$_GET['team_id'] : 0;
 
-        $query = "SELECT p.playerID, p.name, p.age, p.position, p.dob, p.Street, p.City, p.State, p.Country, p.ZipCode, s.Games_played,. s.Plate_appearance,. s.Runs_Scored,. s.Hits,. s.Home_runs, t.team_name, t.city FROM players p LEFT JOIN statistics s ON p.playerID = s.ID LEFT JOIN team t ON p.team_id = t.ID WHERE p.team_id=?;";
+        $query = "SELECT p.playerID, p.name, p.age, p.position, p.dob, p.Street, p.City, p.State, p.Country, p.ZipCode, s.Games_played,. s.Plate_appearance,. s.Runs_Scored,. s.Hits,. s.Home_runs, t.team_name, t.city 
+          FROM players p LEFT JOIN statistics s ON p.playerID = s.ID LEFT JOIN team t ON p.team_id = t.ID 
+          WHERE p.team_id=?;";
 
         $stmt = $db->prepare($query);
         $stmt -> bind_param('i',$team_id);
         $stmt->execute();
         $stmt->store_result();
         $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appeareances, $runs_scored, $hits, $home_runs, $team, $team_city);
-    }
+
+        $record_query = " SELECT 
+                  SUM(CASE 
+                        WHEN (home_team = ? AND home_score > away_score) OR 
+                            (away_team = ? AND away_score > home_score) THEN 1 ELSE 0 
+                      END) AS wins,
+                  SUM(CASE 
+                        WHEN (home_team = ? AND home_score < away_score) OR 
+                            (away_team = ? AND away_score < home_score) THEN 1 ELSE 0 
+                      END) AS losses
+                FROM matches
+                WHERE home_team = ? OR away_team = ?;";
+
+        $record_stmt = $db->prepare($record_query);
+        $record_stmt->bind_param("iiiiii", $team_id, $team_id, $team_id, $team_id, $team_id, $team_id);
+        $record_stmt->execute();
+        $record_stmt->store_result();
+        $record_stmt->bind_result($wins, $losses);
+
+        $match_query = "SELECT m.ID,t1.ID AS home_id, t2.ID AS away_id, t1.team_name AS home, t2.team_name AS away, m.home_score,m.away_score,t1.city AS hcity, t2.city AS acity, m. match_date, m.match_status 
+          FROM matches m LEFT JOIN team t1 ON m.home_team=t1.ID LEFT JOIN team t2 ON m.away_team = t2.ID
+          WHERE home_team = ? or away_team=?";
+        $match_stmt = $db->prepare($match_query);
+        $match_stmt -> bind_param('ii',$team_id,$team_id);
+        $match_stmt -> execute();
+        $match_stmt -> store_result();
+        $match_stmt -> bind_result($matchID,$homeid,$awayid,$home,$away,$hscore,$ascore,$hcity,$acity,$matchdate,$matchstatus); 
+      }
     $positions = ['BENCHED','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH','COACH'];
+    function renderCell($value) {
+      // $style = 'style="border:1px solid black; border-collapse:collapse;"';
+  
+      if (is_null($value)) {
+          echo '<td style="background:rgb(135, 135, 135);"></td>';
+      } else {
+          echo '<td>' . htmlspecialchars($value) . '</td>';
+
+      }
+    }
 ?>
 
 
@@ -38,6 +77,7 @@
     <?php 
     $stmt -> fetch();
     echo "<h1>". $team_city.' '. $team.' '."Team Roster</h1>"
+    
     ?>
 
     
@@ -59,15 +99,6 @@
             <th>Team</th>
          </tr>
           <?php
-            function renderCell($value) {
-              // $style = 'style="border:1px solid black; border-collapse:collapse;"';
-          
-              if (is_null($value)) {
-                  echo '<td style="background:rgb(135, 135, 135);"></td>';
-              } else {
-                  echo '<td>' . htmlspecialchars($value) . '</td>';
-              }
-            }
             // $fmt_style = 'style="vertical-align:top; border:1px solid black;"';
             $stmt->data_seek(0);
             while( $stmt->fetch() )
@@ -149,30 +180,67 @@
               </form>
             </details>
 
-    <h2>Upcoming Matches: </h2>
+    <div style="display:flex; justify-content: space-between; align-items: center; margin-right:100px">
+    <?php
+      $record_stmt->data_seek(0);
+      while( $record_stmt->fetch() )
+      {
+        // $record_stmt->fetch();
+        echo "<h2>Upcoming Matches: </h2>";
+        echo "<h2>Record: W $wins - $losses L";
+      }
+      ?>
+    </div>
     <div>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
+          <th>Match ID</th>
           <th>Opponent</th>
+          <th>Home/Away</th>
           <th>Location</th>
-          <th>Time</th>
+          <th>Match Date</th>
+          <th>Score</th>
+          <th>Status</th>
+          <th>Result</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>2025-05-03</td>
-          <td>New York Yankees</td>
-          <td>Fenway Park</td>
-          <td>7:05 PM</td>
-        </tr>
-        <tr>
-          <td>2025-05-05</td>
-          <td>Toronto Blue Jays</td>
-          <td>Rogers Centre</td>
-          <td>1:10 PM</td>
-        </tr>
+      <tbody><?php
+            // $fmt_style = 'style="vertical-align:top; border:1px solid black;"';
+            $match_stmt->data_seek(0);
+            while( $match_stmt->fetch() )
+            {
+                // Emit table row data, directly output not null values
+                echo "<tr>";
+                echo "<td>$matchID";
+                // display opponent and location based on home/away
+                if ($homeid == $team_id) {
+                  echo "<td>$away";
+                  echo "<td>HOME";
+                  echo "<td>$hcity";
+                }
+                else {
+                  echo "<td>$home";
+                  echo "<td>AWAY";
+                  echo "<td>$hcity";
+                }
+
+                echo "<td>$matchdate";
+                echo "<td>$hscore - $ascore";
+                echo "<td>$matchstatus";
+                // display victory or defeat depending on score
+                if ((($hscore > $ascore && $homeid == $team_id) || ($hscore < $ascore && $homeid != $team_id))){
+                  echo "<td style=\"background:rgb(75, 241, 91);\">W";
+                }
+                elseif ($hscore==$ascore){
+                  echo "<td style=\"background:rgb(121, 121, 121);\">-";
+                }
+                else {
+                  echo "<td style=\"background:rgb(222, 51, 51);\">L";
+                }
+
+            }
+           ?>
       </tbody>
     </table>
     </div>

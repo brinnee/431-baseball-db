@@ -81,6 +81,17 @@ INSERT INTO TEAM VALUES
     (4, "Red Sox", "Boston"),
     (5, "Giants", "San Francisco");
 
+-- insert players and coaches
+
+-- insert stats
+
+-- insert matches
+INSERT INTO Matches (home_team,away_team,home_score,away_score,match_date,match_status) VALUES
+(1,2,4,2,'2025-04-15',"FINAL"),
+(1,5,2,3,'2025-04-22',"FINAL"),
+(1,3,7,6,'2025-04-29',"FINAL"),
+(1,4,0,0,'2025-05-05',"UPCOMING");
+
 -- insert roles
 INSERT INTO Roles (ID, role_name) VALUES
 (1, 'manager'),
