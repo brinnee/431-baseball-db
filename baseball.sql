@@ -67,14 +67,14 @@ CREATE TABLE Users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
-    member_id INT UNSIGNED NOT NULL,
+    member_id INT UNSIGNED NULL, -- set to null so coaches and visitors don't need a member id
     FOREIGN KEY (role_id) REFERENCES Roles(ID) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES Players(playerID) ON DELETE CASCADE
 );
 
 -- insert teams
 INSERT INTO TEAM VALUES
-    (0, "None", "")
+    (0, "None", ""),
     (1, "Dodgers", "Los Angeles"),
     (2, "Yankees", "New York"),
     (3, "Cubs", "Chicago"),
@@ -82,8 +82,22 @@ INSERT INTO TEAM VALUES
     (5, "Giants", "San Francisco");
 
 -- insert players and coaches
+INSERT INTO Players (playerID, name, age, position, dob, team_id, Street, City, State, Country, ZipCode) VALUES 
+(100, 'Woody Sree', 24, 'Forward', '2001-06-15', 1, '123 Maple Ave', 'Irvine', 'CA', 'USA', '92612'),
+(101, 'Maya Chen', 22, 'Midfielder', '2002-03-22', 2, '456 Oak St', 'Anaheim', 'CA', 'USA', '92805'),
+(102, 'Leo Thompson', 27, 'Defender', '1997-09-10', 1, '789 Pine Blvd', 'Santa Ana', 'CA', 'USA', '92701'),
+(103, 'Ava Patel', 20, 'Goalkeeper', '2004-11-05', 3, '321 Birch Ln', 'Fullerton', 'CA', 'USA', '92831'),
+(104, 'Jaxon Rivera', 25, 'Striker', '1999-01-30', 2, '654 Cedar Dr', 'Tustin', 'CA', 'USA', '92780');
+
 
 -- insert stats
+INSERT INTO Statistics (Player, Games_played, Plate_appearance, Runs_Scored, Hits, Home_runs) VALUES
+(100, 15, 52, 12, 18, 4),
+(101, 18, 60, 9, 21, 2),
+(102, 22, 74, 7, 25, 1),
+(103, 20, 50, 4, 13, 0),
+(104, 17, 65, 14, 27, 5);
+
 
 -- insert matches
 INSERT INTO Matches (home_team,away_team,home_score,away_score,match_date,match_status) VALUES
