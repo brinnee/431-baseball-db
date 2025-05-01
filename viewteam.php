@@ -83,6 +83,7 @@
     ?>
 </div>
     
+<a href="logout.php" style="margin-left:100px">Logout</a>
     <h2>Team Roster: </h2>
     <form method="POST" action="updatepos.php?team_id=<?php echo $team_id;?>">
         <table>
@@ -146,11 +147,11 @@
             }
            ?>
         </table>
-        
+        <!-- buttons for updating player positions -->
         <div style="text-align:left; margin-left:100px; margin-top:25px;">
             <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;"> Update Positions </button>
 
-            <button type="submit" style="padding: 12px 24px; font-size: 16px; background-color: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;"> Cancel </button>
+            <button type="submit" name = 'cancel' style="padding: 12px 24px; font-size: 16px; background-color: #f44336; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;"> Cancel </button>
         </div>
     </form>
     <div style="display:flex">

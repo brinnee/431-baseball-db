@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmtRole->close();
 
         //inserting new user
-        $insertQuery = "INSERT INTO Users (username, password, role_id) VALUES ( ?, ?, ?)";
+        $insertQuery = "INSERT INTO Users (username, password, role_id, member_id) VALUES ( ?, ?, ?, 1)";
         $stmt = $conn->prepare($insertQuery);
 
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);

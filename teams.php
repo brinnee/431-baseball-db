@@ -31,6 +31,7 @@ else {
 
 <h1>Teams List</h1>
 
+<a href="logout.php" style="margin-left:100px">Logout</a>
 <table>
     <thead>
         <tr>
