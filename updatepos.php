@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['cancel'])) {
     {
         foreach ($_POST['position'] as $playerID => $position) {
             // Prepare and execute the query to update the position
-            $query = "UPDATE players SET position = ? WHERE playerID = ?";
+            $query = "UPDATE members SET position = ? WHERE playerID = ?";
             $stmt = $db->prepare($query);
             $stmt->bind_param("si", $position, $playerID);
             $stmt->execute();
