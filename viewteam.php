@@ -23,7 +23,7 @@
         $stmt -> bind_param('i',$team_id);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appeareances, $runs_scored, $hits, $home_runs, $team, $team_city);
+        $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appearances, $runs_scored, $hits, $home_runs, $team, $team_city);
 
         $record_query = " SELECT 
                   SUM(CASE 
@@ -94,7 +94,7 @@
             <th>Position</th>
             <th>Address</th>
             <th>Games Played</th>
-            <th>Plate Appeareances</th>
+            <th>Plate appearances</th>
             <th>Runs Scored</th>
             <th>Hits</th>
             <th>Home Runs</th>
@@ -136,7 +136,7 @@
                   .$country."</td>\n";
                 }
                 renderCell($games_played);
-                renderCell($plate_appeareances);
+                renderCell($plate_appearances);
                 renderCell($runs_scored);
                 renderCell($hits);
                 renderCell($home_runs);
@@ -174,8 +174,8 @@
         <label for="games_played">Games Played:</label>
         <input type="text" name="games_played" id="games_played" maxlength="4" size = "5"><br><br>
 
-        <label for="runs_scored">Plate Appeareances:</label>
-        <input type="text" name="plate_appeareances" id="plate_appeareances" maxlength="4" size = "5"><br><br>
+        <label for="runs_scored">Plate appearances:</label>
+        <input type="text" name="plate_appearances" id="plate_appearances" maxlength="4" size = "5"><br><br>
 
         <label for="runs_scored">Runs Scored:</label>
         <input type="text" name="runs_scored" id="runs_scored" maxlength="3" size = "4"><br><br>
@@ -232,7 +232,7 @@
     <div>  
     <details style="text-align:left;margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
       <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Edit Player Info</summary>
-      <form action="addplayer.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px">
+      <form action="updateplayerdata.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px">
             
         <label for ="playerID">Player:</label>
         <select name="playerID" required style= "height: 22px; font-size: 14px;">
@@ -333,6 +333,21 @@
       </tbody>
     </table>
     </div>
-
+    <div style="display:flex">
+    <!-- Statistics Update Form -->
+    <div>  
+      <details style="text-align:left; margin: 15px 0px 10px 100px;; background-color: rgb(157, 158, 162); border-radius: 6px">
+        <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Update Match Statistics</summary>
+        <form action="updatestats.php?team_id=<?php echo $match_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
+    
+      </details>
+    </div>
+    <div>  
+      <details style="text-align:left; margin: 15px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
+        <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Add Match</summary>
+        <form action="updatestats.php?team_id=<?php echo $match_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
+    
+      </details>
+    </div>
 </body>
 </html>

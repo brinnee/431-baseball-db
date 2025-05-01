@@ -3,12 +3,12 @@ require_once('config.php');
 
 $team_id = (int)$_GET['team_id'];
 
-$pID = $_POST['playerID'];
-$games_played = (int)$_POST['games_played'] ?? NUll;
-$plate_appeareances = (int)$_POST['plate_appeareances'] ?? NUll;
-$runs_scored = (int)$_POST['runs_scored'] ?? NUll;
-$hits = (int)$_POST['hits'] ?? NUll;
-$home_runs = (int)$_POST['home_runs'] ?? NUll;
+$pID                = trim( preg_replace("/\t|\R/",' ',$_POST['playerID']));
+$games_played       = (int)trim( preg_replace("/\t|\R/",' ',$_POST['games_played'])) ?? NUll;
+$plate_appearances = (int)trim( preg_replace("/\t|\R/",' ',$_POST['plate_appearances'])) ?? NUll;
+$runs_scored        = (int)trim( preg_replace("/\t|\R/",' ',$_POST['runs_scored'])) ?? NUll;
+$hits               = (int)trim( preg_replace("/\t|\R/",' ',$_POST['hits'])) ?? NUll;
+$home_runs          = (int)trim( preg_replace("/\t|\R/",' ',$_POST['home_runs'])) ?? NUll;
 
 $cols = [];
 $vals = [];
@@ -18,9 +18,9 @@ if( !empty($games_played)) {
     $vals[] = $games_played;
     $types .= 'i';
 }
-if( !empty($plate_appeareances)) {
-    $cols[] = 'Plate_appereances = ?';
-    $vals[] = $plate_appeareances;
+if( !empty($plate_appearances)) {
+    $cols[] = 'Plate_appearances = ?';
+    $vals[] = $plate_appearances;
     $types .= 'i';
 }
 if( !empty($runs_scored)) {
@@ -56,7 +56,6 @@ if ($pID > 0) {
         $vals[] = $pID;
         $types .= 'i';
         $query = "UPDATE statistics SET ". implode(', ', $cols). " WHERE ID = ?";
-        echo $query;
         $stmt = $db -> prepare($query);
         $stmt -> bind_param($types,...$vals);
         @$stmt -> execute();
