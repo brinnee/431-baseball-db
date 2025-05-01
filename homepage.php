@@ -22,7 +22,7 @@ $role = $_SESSION['role'];
     <?php } ?>
 
     <?php if ($role == 'coach') { ?>
-        <a href="coach_page.php">Coach Functions</a><br>
+        <a href="viewteam.php">Coach Functions</a><br>
     <?php } ?>
 
     <?php if ($role == 'player') { ?>
