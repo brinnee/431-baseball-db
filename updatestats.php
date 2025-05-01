@@ -3,12 +3,12 @@ require_once('config.php');
 
 $team_id = (int)$_GET['team_id'];
 
-$pID = $_POST['playerID'];
-$games_played = $_POST['games_played'] ?? NUll;
-$plate_appeareances = $_POST['plate_appeareances'] ?? NUll;
-$runs_scored = $_POST['runs_scored'] ?? NUll;
-$hits = $_POST['hits'] ?? NUll;
-$home_runs = $_POST['home_runs'] ?? NUll;
+$pID                = trim( preg_replace("/\t|\R/",' ',$_POST['playerID']));
+$games_played       = (int)trim( preg_replace("/\t|\R/",' ',$_POST['games_played'])) ?? NUll;
+$plate_appearances = (int)trim( preg_replace("/\t|\R/",' ',$_POST['plate_appearances'])) ?? NUll;
+$runs_scored        = (int)trim( preg_replace("/\t|\R/",' ',$_POST['runs_scored'])) ?? NUll;
+$hits               = (int)trim( preg_replace("/\t|\R/",' ',$_POST['hits'])) ?? NUll;
+$home_runs          = (int)trim( preg_replace("/\t|\R/",' ',$_POST['home_runs'])) ?? NUll;
 
 $cols = [];
 $vals = [];
@@ -18,9 +18,9 @@ if( !empty($games_played)) {
     $vals[] = $games_played;
     $types .= 'i';
 }
-if( !empty($plate_appeareances)) {
-    $cols[] = 'Plate_appereances = ?';
-    $vals[] = $age;
+if( !empty($plate_appearances)) {
+    $cols[] = 'Plate_appearances = ?';
+    $vals[] = $plate_appearances;
     $types .= 'i';
 }
 if( !empty($runs_scored)) {
