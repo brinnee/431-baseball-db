@@ -67,7 +67,7 @@ CREATE TABLE Users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
-    member_id INT UNSIGNED NOT NULL,
+    member_id INT UNSIGNED NULL, -- set to null so coaches and visitors don't need a member id
     FOREIGN KEY (role_id) REFERENCES Roles(ID) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES Members(playerID) ON DELETE CASCADE
 );
