@@ -12,25 +12,25 @@ $role = $_SESSION['role'];
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Zoo Homepage</title>
+    <title>Homepage</title>
 </head>
 <body>
-    <h1>Welcome to the Zoo Management System</h1>
-
-    <?php if ($role == 'owner') { ?>
-        <a href="owner_page.php">Owner Functions</a><br>
-    <?php } ?>
+    <h1>Welcome to the Baseball Management System</h1>
 
     <?php if ($role == 'manager') { ?>
-        <a href="manager_page.php">Manager Functions</a><br>
+        <a href="manager_page.php"> Manager Functions</a><br>
     <?php } ?>
 
-    <?php if ($role == 'employee') { ?>
-        <a href="employee_page.php">Employee Functions</a><br>
+    <?php if ($role == 'coach') { ?>
+        <a href="coach_page.php">Coach Functions</a><br>
     <?php } ?>
 
-    <?php if ($role == 'customer') { ?>
-        <a href="customer_page.php">Customer Functions</a><br>
+    <?php if ($role == 'player') { ?>
+        <a href="player_page.php">Player Functions</a><br>
+    <?php } ?>
+
+    <?php if ($role == 'visitor') { ?>
+        <a href="visitor_page.php">Visitor Functions</a><br>
     <?php } ?>
 
     <a href="logout.php">Logout</a>
