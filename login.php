@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role_name;
-            header('Location: homepage.php');
+            header('Location: teams.php');
             exit();
         } else {
             echo "Invalid username or password.";

@@ -15,7 +15,7 @@
     else {// Connection succeeded 
         $team_id = isset($_GET['team_id']) ? (int)$_GET['team_id'] : 0;
 
-        $query = "SELECT p.playerID, p.name, p.age, p.position, p.dob, p.Street, p.City, p.State, p.Country, p.ZipCode, s.Games_played,. s.Plate_appearances,. s.Runs_Scored,. s.Hits,. s.Home_runs, t.team_name, t.city 
+        $query = "SELECT p.playerID, p.name, p.age, p.position, p.dob, p.Street, p.City, p.State, p.Country, p.ZipCode, s.Games_played, s.Plate_appearances, s.Runs_Scored,. s.Hits, s.Home_runs, t.team_name, t.city, t.ID
           FROM members p LEFT JOIN statistics s ON p.playerID = s.ID LEFT JOIN team t ON p.team_id = t.ID 
           WHERE p.team_id=?;";
 
@@ -23,7 +23,15 @@
         $stmt -> bind_param('i',$team_id);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appearances, $runs_scored, $hits, $home_runs, $team, $team_city);
+        $stmt->bind_result($playerID, $name, $age, $position, $dob, $street, $city, $state, $country, $zip, $games_played, $plate_appearances, $runs_scored, $hits, $home_runs, $team, $team_city, $team_ids);
+        
+        $players_query = "SELECT m.playerID, m.name, t.ID, t.team_name FROM members m LEFT JOIN team t ON m.team_id = t.ID WHERE team_id != ?;";
+
+        $players_stmt = $db -> prepare($players_query);
+        $players_stmt -> bind_param('i',$team_id);
+        $players_stmt -> execute();
+        $players_stmt -> store_result();
+        $players_stmt -> bind_result($p_id, $p_names, $t_ids, $t_names);
 
         $record_query = " SELECT 
                   SUM(CASE 
@@ -51,6 +59,12 @@
         $match_stmt -> execute();
         $match_stmt -> store_result();
         $match_stmt -> bind_result($matchID,$homeid,$awayid,$home,$away,$hscore,$ascore,$hcity,$acity,$matchdate,$matchstatus); 
+
+        $team_query = "SELECT ID, team_name FROM team";
+        $team_stmt = $db->prepare($team_query);
+        $team_stmt -> execute();
+        $team_stmt -> store_result();
+        $team_stmt -> bind_result($t_id, $t_name);
       }
     $positions = ['BENCHED','P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH'];
     function renderCell($value) {
@@ -159,7 +173,7 @@
     <div>  
     <details style="text-align:left;margin: 10px 0px 10px 100px;; background-color: rgb(157, 158, 162); border-radius: 6px">
       <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Update Player Stats</summary>
-      <form action="updatestats.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
+      <form action="updatestats.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top: 10px; margin-left:10px; margin-right:10px">
         <label for ="playerID">Player:</label>
           <select name="playerID" required style= "height: 22px; font-size: 14px;">
             <option value="" selected disabled hidden>Choose Player Here</option>
@@ -195,7 +209,7 @@
     <div>  
     <details style="text-align:left; margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
       <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Add Player To Team</summary>
-      <form action="addplayer.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px">
+      <form action="addplayer.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px; margin-right:10px">
             
         <label for="name">Name:</label>
         <input type="text" name="name" id="name" maxlength="50" size= "15"><br><br>
@@ -229,11 +243,33 @@
       </form>
     </details>
     </div>
+    <!-- Remove Player Form-->
+    <div>  
+    <details style="text-align:left;margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
+      <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Remove Player From Team</summary>
+      <form action="removeplayer.php?team_id=<?php echo $team_id;?>" method="post"       onsubmit="return confirm('Are you sure you want to remove this player from the team?');"
+        style="margin-top:    10px; margin-left:10px; margin-right:10px">
+            
+        <label for ="playerID">Player:</label>
+        <select name="playerID" required style= "height: 22px; font-size: 14px;">
+          <option value="" selected disabled hidden>Choose Player Here</option>
+          <?php
+            $stmt->data_seek(0);
+            while( $stmt->fetch() )
+            {
+              echo "<option value=\"$playerID\">".$name.', ID: '.$playerID."</option>\n";
+            }
+          ?>
+        </select><br><br>
+        <button style="margin-bottom: 10px;" type="submit">Remove Player</button>
+      </form>
+    </details>
+            </div>
     <!-- Edit Player Form-->
     <div>  
     <details style="text-align:left;margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
       <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Edit Player Info</summary>
-      <form action="updateplayerdata.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px">
+      <form action="updateplayerdata.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px; margin-right:10px">
             
         <label for ="playerID">Player:</label>
         <select name="playerID" required style= "height: 22px; font-size: 14px;">
@@ -269,6 +305,74 @@
       </form>
     </details>
             </div>
+    <!-- Transfer Player Form-->
+    <div>  
+    <details style="text-align:left;margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
+      <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Trade Player</summary>
+      <form action="transferplayer.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px; margin-right:10px">
+            
+        <label for ="pIDsend">Send:</label>
+        <select name="pIDsend" required style= "height: 22px; font-size: 14px;">
+          <option value="" selected disabled hidden>Select Player Here</option>
+          <?php
+            $stmt->data_seek(0);
+            while( $stmt->fetch() )
+            {
+              echo "<option value=\"{$playerID}|{$team_ids}\">".$name.', ID: '.$playerID.', Team: '.$team."</option>\n";
+            }
+          ?>
+        </select><br><br>
+
+        <label for ="pIDreceive">Receive:</label>
+        <select name="pIDreceive" required style= "height: 22px; font-size: 14px;">
+          <option value="" selected disabled hidden>Select Player Here</option>
+          <?php
+            $players_stmt->data_seek(0);
+            while( $players_stmt->fetch() )
+            {
+              echo "<option value=\"{$p_id}|{$t_ids}\">".$p_names.', ID: '.$p_id.', Team: '.$t_names."</option>\n";
+            }
+          ?>
+        </select><br><br>
+
+        <button style="margin-bottom: 10px;" type="submit">Transfer Player</button>
+      </form>
+    </details>
+            </div>
+    <!-- Compare Player Form-->
+    <div>  
+    <details style="text-align:left;margin: 10px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
+      <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Compare Players</summary>
+      <form action="compareplayers.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top:    10px; margin-left:10px; margin-right:10px">
+            
+        <label for ="pID1">Player 1:</label>
+        <select name="pID1" required style= "height: 22px; font-size: 14px;">
+          <option value="" selected disabled hidden>Select Player Here</option>
+          <?php
+            $stmt->data_seek(0);
+            while( $stmt->fetch() )
+            {
+              echo "<option value=\"{$playerID}\">".$name.', ID: '.$playerID.', Team: '.$team."</option>\n";
+            }
+          ?>
+        </select><br><br>
+
+        <label for ="pID2">Player 2:</label>
+        <select name="pID2" required style= "height: 22px; font-size: 14px;">
+          <option value="" selected disabled hidden>Select Player Here</option>
+          <?php
+            $players_stmt->data_seek(0);
+            while( $players_stmt->fetch() )
+            {
+              echo "<option value=\"{$p_id}\">".$p_names.', ID: '.$p_id.', Team: '.$t_names."</option>\n";
+            }
+          ?>
+        </select><br><br>
+
+        <button style="margin-bottom: 10px;" type="submit">Compare Players</button>
+      </form>
+    </details>
+            </div>
     </div>
     <div style="display:flex; justify-content: space-between; align-items: center; margin-right:100px">
     <?php
@@ -290,7 +394,7 @@
           <th>Home/Away</th>
           <th>Location</th>
           <th>Match Date</th>
-          <th>Score</th>
+          <th>Score (H-A)</th>
           <th>Status</th>
           <th>Result</th>
         </tr>
@@ -335,19 +439,78 @@
     </table>
     </div>
     <div style="display:flex">
-    <!-- Statistics Update Form -->
+    <!-- Match Statistics Update Form -->
     <div>  
       <details style="text-align:left; margin: 15px 0px 10px 100px;; background-color: rgb(157, 158, 162); border-radius: 6px">
         <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Update Match Statistics</summary>
-        <form action="updatestats.php?team_id=<?php echo $match_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
-    
+        <form action="editmatch.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top: 10px; margin-left:10px; margin-right:10px">
+        <label for ="matchID">Match:</label>
+          <select name="matchID" required style= "height: 22px; font-size: 14px;">
+            <option value="" selected disabled hidden>Choose Match Here</option>
+            <?php
+              $match_stmt->data_seek(1);
+              while( $match_stmt->fetch() )
+              {
+                echo "<option value=\"$matchID\">".$home.' vs '.$away.', ID: '.$matchID."</option>\n";
+              }
+            ?>
+          </select><br><br>
+
+        <label for="home_score">Home Score:</label>
+        <input type="text" name="home_score" id="hscore" maxlength="2" size = "2"><br><br>
+
+        <label for="away_score">Away Score:</label>
+        <input type="text" name="away_score" id="ascore" maxlength="2" size = "2"><br><br>
+
+        <label for="match_status">Match Status:</label>
+        <input type="text" name="match_status" id="match_status" maxlength="50" size = "14"><br><br>
+
+        <button name="edit" style="margin-bottom: 10px;" type="submit">Submit Stats</button>
+      </form>
       </details>
     </div>
     <div>  
       <details style="text-align:left; margin: 15px 0px 10px 15px; background-color: rgb(157, 158, 162); border-radius: 6px">
         <summary style=" padding: 12px 32px; font-size: 16px; background-color:rgb(54, 82, 244); color: white; border: none; border-radius: 6px; cursor: pointer; width: auto;"> Add Match</summary>
-        <form action="updatestats.php?team_id=<?php echo $match_id;?>" method="post" style="margin-top: 10px; margin-left:10px">
-    
+        <form action="editmatch.php?team_id=<?php echo $team_id;?>" method="post" style="margin-top: 10px; margin-left:10px; margin-right:10px">
+        <label for ="home">Home Team:</label>
+          <select name="home" required style= "height: 22px; font-size: 14px;">
+            <option value="home" selected disabled hidden>Choose Home Team Here</option>
+            <?php
+              $team_stmt->data_seek(1);
+              while( $team_stmt->fetch() )
+              {
+                echo "<option value=\"$t_id\">".$t_name.', ID: '.$t_id."</option>\n";
+              }
+            ?>
+          </select><br><br>
+
+        <label for ="away">Away Team:</label>
+          <select name="away" required style= "height: 22px; font-size: 14px;">
+            <option value="away" selected disabled hidden>Choose Away Team Here</option>
+            <?php
+              $team_stmt->data_seek(0);
+              while( $team_stmt->fetch() )
+              {
+                echo "<option value=\"$t_id\">".$t_name.', ID: '.$t_id."</option>\n";
+              }
+            ?>
+          </select><br><br>
+
+        <label for="home_score">Home Score:</label>
+        <input type="text" name="home_score" id="hscore" maxlength="2" size = "2"><br><br>
+
+        <label for="away_score">Away Score:</label>
+        <input type="text" name="away_score" id="ascore" maxlength="2" size = "2"><br><br>
+        
+        <label for="match_date">Match Date:</label>
+        <input type="text" name="match_date" id="match_date" maxlength="10" size = "12"><br><br>
+
+        <label for="match_status">Match Status:</label>
+        <input type="text" name="match_status" id="match_status" maxlength="50" size = "14"><br><br>
+
+        <button style="margin-bottom: 10px;" type="submit">Submit Stats</button>
+      </form>    
       </details>
     </div>
 </body>

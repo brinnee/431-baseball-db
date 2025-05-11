@@ -106,7 +106,7 @@ INSERT INTO Members (name, age, position, dob, team_id, Street, City, State, Cou
     -- Yankees
     ("David Lee", 26, "P", "1998-06-18", 2, "200 Broadway", "New York", "NY", "USA", "10001"),
     ("Ryan Brown", 31, "C", "1993-09-02", 2, "201 5th Ave", "New York", "NY", "USA", "10002"),
-    ("Kyle Johnson", 29, "Second Base", "1995-07-22", 2, "202 Madison St", "New York", "NY", "USA", "10003"),
+    ("Kyle Johnson", 29, "2B", "1995-07-22", 2, "202 Madison St", "New York", "NY", "USA", "10003"),
     ("Jamal Harris", 23, "SS", "2001-11-09", 2, "203 Wall St", "New York", "NY", "USA", "10004"),
     ("Jose Rivera", 27, "LF", "1997-04-14", 2, "204 Lexington Ave", "New York", "NY", "USA", "10005"),
 
@@ -127,7 +127,7 @@ INSERT INTO Members (name, age, position, dob, team_id, Street, City, State, Cou
     -- Giants
     ("Tyler Moore", 23, "P", "2001-04-04", 5, "500 Market St", "San Francisco", "CA", "USA", "94101"),
     ("Eric Turner", 29, "C", "1995-06-16", 5, "501 Castro St", "San Francisco", "CA", "USA", "94102"),
-    ("Kevin Scott", 27, "Second Base", "1997-08-08", 5, "502 Mission St", "San Francisco", "CA", "USA", "94103"),
+    ("Kevin Scott", 27, "2B", "1997-08-08", 5, "502 Mission St", "San Francisco", "CA", "USA", "94103"),
     ("Hunter Bell", 26, "SS", "1998-03-27", 5, "503 Van Ness Ave", "San Francisco", "CA", "USA", "94104"),
     ("Noah Grant", 31, "CF", "1993-01-03", 5, "504 Haight St", "San Francisco", "CA", "USA", "94105");
 
@@ -187,16 +187,16 @@ INSERT INTO Matches (home_team,away_team,home_score,away_score,match_date,match_
     (4, 3, 5, 3, '2024-03-22', 'FINAL'),
     (5, 3, 3, 4, '2024-03-30', 'FINAL'),
     (4, 5, 2, 0, '2024-04-05', 'FINAL'),
-    (2, 1, NULL, NULL, '2025-05-20', 'UPCOMING'),
-    (1, 3, NULL, NULL, '2025-05-22', 'UPCOMING'),
-    (1, 4, NULL, NULL, '2025-05-25', 'UPCOMING'),
-    (5, 1, NULL, NULL, '2025-05-30', 'UPCOMING'),
-    (3, 2, NULL, NULL, '2025-06-02', 'UPCOMING'),
-    (2, 4, NULL, NULL, '2025-06-05', 'UPCOMING'),
-    (5, 2, NULL, NULL, '2025-06-08', 'UPCOMING'),
-    (3, 4, NULL, NULL, '2025-06-11', 'UPCOMING'),
-    (3, 5, NULL, NULL, '2025-06-15', 'UPCOMING'),
-    (5, 4, NULL, NULL, '2025-06-18', 'UPCOMING');
+    (2, 1, 0, 0, '2025-05-20', 'UPCOMING'),
+    (1, 3, 0, 0, '2025-05-22', 'UPCOMING'),
+    (1, 4, 0, 0, '2025-05-25', 'UPCOMING'),
+    (5, 1, 0, 0, '2025-05-30', 'UPCOMING'),
+    (3, 2, 0, 0, '2025-06-02', 'UPCOMING'),
+    (2, 4, 0, 0, '2025-06-05', 'UPCOMING'),
+    (5, 2, 0, 0, '2025-06-08', 'UPCOMING'),
+    (3, 4, 0, 0, '2025-06-11', 'UPCOMING'),
+    (3, 5, 0, 0, '2025-06-15', 'UPCOMING'),
+    (5, 4, 0, NULL, '2025-06-18', 'UPCOMING');
 
 -- insert roles
 INSERT INTO Roles (ID, role_name) VALUES

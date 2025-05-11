@@ -29,9 +29,10 @@ else {
 </head>
 <body>
 
-<h1>Teams List</h1>
-
+<h1>Welcome to the Baseball Management System</h1>
 <a href="logout.php" style="margin-left:100px">Logout</a>
+<h2 style="margin-left:100px; align-text:left">Teams List:</h2>
+
 <table>
     <thead>
         <tr>
